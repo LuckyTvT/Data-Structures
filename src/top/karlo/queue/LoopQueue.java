@@ -12,7 +12,7 @@ import top.karlo.array.Array;
 
 public class LoopQueue<E> implements Queue<E> {
 
-    private Array<E> array;
+    private E[] data;
     private int front,tail;
 
     public LoopQueue() {
@@ -20,7 +20,7 @@ public class LoopQueue<E> implements Queue<E> {
     }
 
     public LoopQueue(int capacity) {
-        array = new Array<E>(capacity);
+        data = (E[])new Object[capacity+1];
         int front = 0;
         int tail = 0;
 
@@ -29,48 +29,42 @@ public class LoopQueue<E> implements Queue<E> {
     //往队尾部添加元素
     @Override
     public void enqueue(E e) {
-        if(tail < front && front - tail == 1){
-            //如果容量达到上限，则进行扩容
-            resize();
+        if((tail+1)%data.length == front){
+            resize(getCapacity() * 2);
         }
-        if(tail > front && tail - front == array.getCapacity()){
-            resize();
-        }
-        if(tail == getCapacity() && front >1){
+//        if(tail < front && front - tail == 1){
+//            //如果容量达到上限，则进行扩容
+//            resize();
+//        }
+//        if(tail > front && tail - front == getCapacity()){
+//            resize();
+//        }
+        data[tail] = e;
+        tail++;
+        if(tail == data.length && front >1){
             tail = 0;
         }
-        array.add(tail,e);
-        tail++;
 
     }
 
-    private void resize() {
-        Array<E> eArray = new Array<>(array.getCapacity() * 2);
-        if(tail > front){
-            for (int i = front; i <= tail - 1; i++) {
-                eArray.addLast(array.findEle(i));
-            }
-        }else{
-            for (int i = front; i != tail; i++) {
-                eArray.addLast(array.findEle(i));
-                if(i+1 == array.getCapacity()){
-                    i = -1;
-                }
-            }
+    private void resize(int newCapacity) {
+        E[] eArray = (E[])new Object[newCapacity+1];
+        for (int i = 0; i < getCapacity() ; i++) {
+            eArray[i] = data[(i+front)%data.length];
         }
         front = 0;
-        tail = array.getSize();
-        array = eArray;
+        tail = getCapacity();
+        data = eArray;
 
     }
 
     //从队列首部移除元素
     @Override
     public E dequeue() {
-        E e = array.findEle(front);
-        array.setEle(front,null);
+        E e = data[front];
+        data[front] = null;
 
-        if(front == array.getCapacity() - 1){
+        if(front == getCapacity() - 1){
             front = 0;
         }else{
             front ++;
@@ -82,20 +76,20 @@ public class LoopQueue<E> implements Queue<E> {
     public int getSize() {
         int size = 0;
         if(front < tail ){
-            size = tail - front;
+            size = tail-1 - front;
         }else{
-            size = tail - 1 + front;
+            size = tail + (data.length - front);
         }
         return size;
     }
 
     public int getCapacity(){
-        return array.getCapacity();
+        return data.length-1;
     }
 
     @Override
     public E peek() {
-        return null;
+        return data[front];
     }
 
     @Override
@@ -103,26 +97,22 @@ public class LoopQueue<E> implements Queue<E> {
         return front == tail;
     }
 
+    @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        String s = String.format("LoopQueue size:%d , capacity:%d", getSize(), array.getCapacity());
+        String s = String.format("LoopQueue size:%d , capacity:%d", getSize(), getCapacity());
         System.out.println(s);
         sb.append("front [");
 
 
-        for (int i = front; i != tail; i++) {
-            sb.append(array.findEle(i));
-            if(i+1 >= array.getCapacity()){
-                i = 0;
-            }
+        for (int i = front; i != tail ; i = (i+1)%data.length) {
+            sb.append(data[i]);
             if(i != tail-1){
                 sb.append(", ");
-            }else{
-                sb.append("] tail");
             }
         }
-
+        sb.append("] tail");
         return sb.toString();
     }
 
