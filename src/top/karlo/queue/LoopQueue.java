@@ -29,16 +29,10 @@ public class LoopQueue<E> implements Queue<E> {
     //往队尾部添加元素
     @Override
     public void enqueue(E e) {
+        //因为循环队列需要浪费一个空间， 则判断队列满的条件为 (tail+1)%data.length = front
         if((tail+1)%data.length == front){
             resize(getCapacity() * 2);
         }
-//        if(tail < front && front - tail == 1){
-//            //如果容量达到上限，则进行扩容
-//            resize();
-//        }
-//        if(tail > front && tail - front == getCapacity()){
-//            resize();
-//        }
         data[tail] = e;
         tail++;
         if(tail == data.length && front >1){
