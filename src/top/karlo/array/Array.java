@@ -90,6 +90,10 @@ public class Array<E> {
         return e;
     }
 
+    public E get(int index){
+        return data[index];
+    }
+
     public E removeFirstEle(){
         return removeEle(0);
     }
@@ -102,6 +106,7 @@ public class Array<E> {
         data[index] = e;
     }
 
+    @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
         String s = String.format("Array size:%d ,capacity:%d", size, getCapacity());

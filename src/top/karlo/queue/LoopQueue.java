@@ -1,7 +1,5 @@
 package top.karlo.queue;
 
-import top.karlo.array.Array;
-
 /**
  * 功能描述:
  *      循环队列
